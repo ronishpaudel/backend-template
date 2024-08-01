@@ -1,0 +1,37 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id         Int       @id @default(autoincrement())
+  email      String    @unique
+  username   String
+  profilePic String
+  products   Product[] @relation("UserProducts")
+
+  @@map("users")
+}
+
+model Product {
+  id           Int     @id @default(autoincrement())
+  name         String
+  price        String
+  crossedPrice String?
+  description  String
+  imageUrl     String
+  thumbnailUrl String?
+  category     String
+  size         String?
+  status       String
+  userId       Int
+  user         User    @relation("UserProducts", fields: [userId], references: [id])
+  flag         Boolean
+
+  @@map("products")
+}
