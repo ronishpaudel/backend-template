@@ -1,25 +1,25 @@
-import Express from "express";
-import { db, libsql } from "./utils/db";
-const app = Express();
+import express from "express";
+import { db } from "./utils/db";
+import cors from "cors";
+import { userRoute } from "./resources/users";
+import { productRoute } from "./resources/product";
+
+const app = express();
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
+app.use(cors());
+app.use(express.json());
+app.use(userRoute);
+app.use(productRoute);
+app.use(express.urlencoded({ extended: true }));
+
 // app.use(async (req, res, next) => {
 //   await libsql.sync();
 //   next();
 // });
-
-app.get("/products", async (req, res) => {
-  try {
-    const products = await db.product.findMany();
-    res.json(products);
-  } catch (error) {
-    console.error("Error fetching products:", error);
-    res.status(500).send("Error fetching products");
-  }
-});
 
 app.get("/products/:id", async (req, res) => {
   try {
