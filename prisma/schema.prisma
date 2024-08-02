@@ -14,24 +14,40 @@ model User {
   username   String
   profilePic String
   products   Product[] @relation("UserProducts")
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
   @@map("users")
 }
 
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String
+  products  Product[] @relation("CategoryProducts")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("categories")
+}
+
 model Product {
-  id           Int     @id @default(autoincrement())
+  id           Int      @id @default(autoincrement())
   name         String
+  slug         String   @unique()
   price        String
   crossedPrice String?
   description  String
   imageUrl     String
   thumbnailUrl String?
-  category     String
-  size         String?
-  status       String
+  categoryId   Int
+  category     Category @relation("CategoryProducts", fields: [categoryId], references: [id])
   userId       Int
-  user         User    @relation("UserProducts", fields: [userId], references: [id])
+  user         User     @relation("UserProducts", fields: [userId], references: [id])
   flag         Boolean
+  size         String?
+  status       String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   @@map("products")
 }
