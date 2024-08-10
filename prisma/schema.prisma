@@ -20,6 +20,18 @@ model User {
   @@map("users")
 }
 
+model Customer {
+  id          Int      @id @default(autoincrement())
+  email       String   @unique
+  name        String
+  phoneNumber Int
+  orders      Order[]  @relation("CustomerOrders")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("customers")
+}
+
 model Category {
   id        Int       @id @default(autoincrement())
   name      String
@@ -49,5 +61,47 @@ model Product {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
+  orders OrderProduct[] @relation("ProductOrders")
+
   @@map("products")
+}
+
+model Order {
+  id          Int            @id @default(autoincrement())
+  orderNumber String         @unique
+  status      String
+  totalAmount String
+  customerId  Int
+  customer    Customer       @relation("CustomerOrders", fields: [customerId], references: [id])
+  products    OrderProduct[] @relation("OrderProducts")
+  payments    Payment[]      @relation("OrderPayments")
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@map("orders")
+}
+
+model OrderProduct {
+  id        Int     @id @default(autoincrement())
+  orderId   Int
+  productId Int
+  quantity  Int
+  order     Order   @relation("OrderProducts", fields: [orderId], references: [id])
+  product   Product @relation("ProductOrders", fields: [productId], references: [id])
+
+  @@unique([orderId, productId])
+  @@map("order_products")
+}
+
+model Payment {
+  id        Int      @id @default(autoincrement())
+  orderId   Int
+  amount    String
+  method    String
+  status    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  order     Order    @relation("OrderPayments", fields: [orderId], references: [id])
+
+  @@map("payments")
 }
