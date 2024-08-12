@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import { db } from "./utils/db";
 import { productRoute } from "./resources/product";
+import { categoryRoute } from "./resources/category";
 import { uploadImages } from "./middleware/multerMiddleware";
 import { getAuth } from "firebase-admin/auth";
 import { initializeApp, cert } from "firebase-admin/app";
@@ -78,6 +79,7 @@ app.post("/auth/registration", async (req, res) => {
     res.status(500).send("User creation failed");
   }
 });
+
 //  Route to get user information
 app.get("/user/me", async (req, res) => {
   const token = req.headers.authorization;
@@ -91,7 +93,7 @@ app.get("/user/me", async (req, res) => {
   try {
     // Verify the Firebase token
     const decodedToken = await getAuth().verifyIdToken(token);
-    const { email, name, picture } = decodedToken;
+    const { email } = decodedToken;
 
     const user = await db.user.findFirst({
       where: {
@@ -116,6 +118,7 @@ app.get("/user/me", async (req, res) => {
 });
 
 app.use(productRoute);
+app.use(categoryRoute);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
