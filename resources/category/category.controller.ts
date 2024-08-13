@@ -9,16 +9,16 @@ const getAll = async (req: Request, res: Response) => {
   const searchVal = req.query.q;
   try {
     if (!searchVal) {
-      const blogs = await categoryRepo.getAll(offset, pageSize);
+      const category = await categoryRepo.getAll(offset, pageSize);
 
-      return res.json(blogs);
+      return res.json(category);
     } else {
-      const blogs = await categoryRepo.getAllWithSearch(
+      const category = await categoryRepo.getAllWithSearch(
         offset,
         pageSize,
         String(searchVal)
       );
-      return res.json(blogs);
+      return res.json(category);
     }
   } catch (e) {
     console.log(e);
@@ -30,14 +30,17 @@ const createCategory = async (req: Request, res: Response) => {
   try {
     const { name } = req.body;
 
+    const { id: userId } = req.authUser;
+    console.log({ userId, nameincategory: name });
     const categoryData = {
       name,
+      userId,
     };
 
     console.log({ categoryData });
 
-    const blog = await categoryRepo.createCategory(categoryData);
-    return res.json(blog);
+    const category = await categoryRepo.createCategory(categoryData);
+    return res.json(category);
   } catch (e) {
     if (e instanceof Error) res.status(404).send(e.message);
   }
@@ -46,8 +49,8 @@ const createCategory = async (req: Request, res: Response) => {
 const removeCategory = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const blog = await categoryRepo.removeCategory(Number(id));
-    return res.json(blog);
+    const category = await categoryRepo.removeCategory(Number(id));
+    return res.json(category);
   } catch (e) {
     if (e instanceof Error) res.status(404).send(e.message);
   }
