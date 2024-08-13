@@ -9,13 +9,14 @@ datasource db {
 }
 
 model User {
-  id         Int       @id @default(autoincrement())
-  email      String    @unique
+  id         Int        @id @default(autoincrement())
+  email      String     @unique
   username   String
   profilePic String
-  products   Product[] @relation("UserProducts")
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  products   Product[]  @relation("UserProducts")
+  categories Category[] @relation("UserCategories")
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
 
   @@map("users")
 }
@@ -38,6 +39,8 @@ model Category {
   products  Product[] @relation("CategoryProducts")
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  userId    Int
+  user      User      @relation("UserCategories", fields: [userId], references: [id])
 
   @@map("categories")
 }
