@@ -15,7 +15,7 @@ productRoute.get("/products/:slug", async (req, res) => {
   await productController.getProductBySlug(req, res);
 });
 
-productRoute.post("/create-products", async (req, res) => {
+productRoute.post("/create-product", async (req, res) => {
   await productController.createProduct(req, res);
 });
 export { productRoute };
