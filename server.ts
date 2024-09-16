@@ -7,6 +7,7 @@ import { uploadImages } from "./middleware/multerMiddleware";
 import { getAuth } from "firebase-admin/auth";
 import { initializeApp, cert } from "firebase-admin/app";
 import path from "path";
+import sharp from "sharp";
 
 const app = express();
 
@@ -124,16 +125,28 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-//upload product photos
-app.post("/upload", uploadImages, (req, res) => {
+app.post("/upload", uploadImages, async (req, res) => {
   try {
+    const files = req.files as Express.Multer.File[];
+
+    if (!files) {
+      return res.status(400).send("No files uploaded.");
+    }
+
+    const processedImages = await Promise.all(
+      files.map((file) => {
+        const outputPath = `./uploads/${file.filename}`;
+        return sharp(file.path).resize(500, 500).toFile(outputPath);
+      })
+    );
+
     res.json({
-      message: "Images uploaded successfully",
-      files: req.files,
+      message: "Images uploaded and resized successfully",
+      files: processedImages,
     });
   } catch (error) {
-    console.error("Error uploading images:", error);
-    res.status(500).send("Error uploading images");
+    console.error("Error processing images:", error);
+    res.status(500).send("Error processing images");
   }
 });
 
